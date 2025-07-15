@@ -1,6 +1,10 @@
 package com.mentormatch.model;
 
-import javax.persistence.*;
+
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
 
 @Entity
 public class Mentor {
@@ -27,4 +31,4 @@ public class Mentor {
 
     public String getExperience() { return experience; }
     public void setExperience(String experience) { this.experience = experience; }
-} 
+}
