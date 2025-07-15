@@ -1,11 +1,14 @@
 package com.mentormatch.service;
 
+import com.mentormatch.dto.MentorDTO;
+import com.mentormatch.mapper.MentorMapper;
 import com.mentormatch.model.Mentor;
 import com.mentormatch.repository.MentorRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class MentorService {
@@ -15,16 +18,21 @@ public class MentorService {
         this.mentorRepository = mentorRepository;
     }
 
-    public List<Mentor> findAll() {
-        return mentorRepository.findAll();
+    public List<MentorDTO> findAll() {
+        return mentorRepository.findAll().stream()
+                .map(MentorMapper::toDTO)
+                .collect(Collectors.toList());
     }
 
-    public Optional<Mentor> findById(Long id) {
-        return mentorRepository.findById(id);
+    public Optional<MentorDTO> findById(Long id) {
+        return mentorRepository.findById(id)
+                .map(MentorMapper::toDTO);
     }
 
-    public Mentor save(Mentor mentor) {
-        return mentorRepository.save(mentor);
+    public MentorDTO save(MentorDTO mentorDTO) {
+        Mentor mentor = MentorMapper.toEntity(mentorDTO);
+        Mentor saved = mentorRepository.save(mentor);
+        return MentorMapper.toDTO(saved);
     }
 
     public void deleteById(Long id) {
