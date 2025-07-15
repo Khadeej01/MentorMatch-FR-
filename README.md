@@ -85,5 +85,24 @@ Administrative Management:
 
 
 
+**. Use case diagram :**
+![image](https://github.com/user-attachments/assets/aec121bf-671a-4d67-9cfe-59132cd8fc5e)
+
+
+**. Class diagram :**
+![image](https://github.com/user-attachments/assets/9c405886-69ab-41d9-811e-483217259972)
+
+
+
+**. Sequence diagram for user :**
+![image](https://github.com/user-attachments/assets/aa2ceb7a-36a2-48ad-b3bb-245777c92ffd)
+
+
+**. Sequence diagram for mentor :**
+
+
+
+
+
 
 
