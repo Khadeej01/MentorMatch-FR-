@@ -1,14 +1,11 @@
 package com.mentormatch.controller;
 
 import com.mentormatch.dto.ApprenantDTO;
-import com.mentormatch.mapper.ApprenantMapper;
-import com.mentormatch.model.Apprenant;
 import com.mentormatch.service.ApprenantService;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/apprenants")
@@ -21,30 +18,24 @@ public class ApprenantController {
 
     @GetMapping
     public List<ApprenantDTO> getAllApprenants() {
-        return apprenantService.findAll().stream()
-                .map(ApprenantMapper::toDTO)
-                .collect(Collectors.toList());
+        return apprenantService.findAll();
     }
 
     @GetMapping("/{id}")
     public ApprenantDTO getApprenantById(@PathVariable Long id) {
-        Optional<Apprenant> apprenant = apprenantService.findById(id);
-        return apprenant.map(ApprenantMapper::toDTO).orElse(null);
+        Optional<ApprenantDTO> apprenant = apprenantService.findById(id);
+        return apprenant.orElse(null);
     }
 
     @PostMapping
     public ApprenantDTO createApprenant(@RequestBody ApprenantDTO apprenantDTO) {
-        Apprenant apprenant = ApprenantMapper.toEntity(apprenantDTO);
-        Apprenant savedApprenant = apprenantService.save(apprenant);
-        return ApprenantMapper.toDTO(savedApprenant);
+        return apprenantService.save(apprenantDTO);
     }
 
     @PutMapping("/{id}")
     public ApprenantDTO updateApprenant(@PathVariable Long id, @RequestBody ApprenantDTO apprenantDTO) {
         apprenantDTO.setId(id);
-        Apprenant apprenant = ApprenantMapper.toEntity(apprenantDTO);
-        Apprenant updatedApprenant = apprenantService.save(apprenant);
-        return ApprenantMapper.toDTO(updatedApprenant);
+        return apprenantService.save(apprenantDTO);
     }
 
     @DeleteMapping("/{id}")
