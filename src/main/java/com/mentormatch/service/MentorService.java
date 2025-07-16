@@ -38,4 +38,11 @@ public class MentorService {
     public void deleteById(Long id) {
         mentorRepository.deleteById(id);
     }
+
+    public List<MentorDTO> findByAvailability(boolean isAvailable) {
+        return mentorRepository.findByIsAvailable(isAvailable)
+                .stream()
+                .map(MentorMapper::toDTO)
+                .collect(Collectors.toList());
+    }
 } 

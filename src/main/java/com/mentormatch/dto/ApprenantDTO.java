@@ -6,6 +6,7 @@ public class ApprenantDTO {
     private String email;
     private String objectifs;
     private String niveau;
+    private String role;
 
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
@@ -21,4 +22,7 @@ public class ApprenantDTO {
 
     public String getNiveau() { return niveau; }
     public void setNiveau(String niveau) { this.niveau = niveau; }
+
+    public String getRole() { return role; }
+    public void setRole(String role) { this.role = role; }
 } 

@@ -17,7 +17,10 @@ public class MentorController {
     }
 
     @GetMapping
-    public List<MentorDTO> getAllMentors() {
+    public List<MentorDTO> getAllMentors(@RequestParam(value = "available", required = false) Boolean available) {
+        if (available != null) {
+            return mentorService.findByAvailability(available);
+        }
         return mentorService.findAll();
     }
 
