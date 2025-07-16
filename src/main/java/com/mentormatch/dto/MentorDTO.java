@@ -7,6 +7,7 @@ public class MentorDTO {
     private String competences;
     private String experience;
     private boolean isAvailable;
+    private String role;
 
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
@@ -25,4 +26,7 @@ public class MentorDTO {
 
     public boolean isAvailable() { return isAvailable; }
     public void setAvailable(boolean isAvailable) { this.isAvailable = isAvailable; }
+
+    public String getRole() { return role; }
+    public void setRole(String role) { this.role = role; }
 } 

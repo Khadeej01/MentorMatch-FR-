@@ -11,6 +11,7 @@ public class ApprenantMapper {
         dto.setEmail(apprenant.getEmail());
         dto.setObjectifs(apprenant.getObjectifs());
         dto.setNiveau(apprenant.getNiveau());
+        dto.setRole(apprenant.getRole());
         return dto;
     }
 
@@ -21,6 +22,7 @@ public class ApprenantMapper {
         apprenant.setEmail(dto.getEmail());
         apprenant.setObjectifs(dto.getObjectifs());
         apprenant.setNiveau(dto.getNiveau());
+        apprenant.setRole(dto.getRole());
         return apprenant;
     }
 } 

@@ -12,6 +12,7 @@ public class MentorMapper {
         dto.setCompetences(mentor.getCompetences());
         dto.setExperience(mentor.getExperience());
         dto.setAvailable(mentor.isAvailable());
+        dto.setRole(mentor.getRole());
         return dto;
     }
 
@@ -23,6 +24,7 @@ public class MentorMapper {
         mentor.setCompetences(dto.getCompetences());
         mentor.setExperience(dto.getExperience());
         mentor.setAvailable(dto.isAvailable());
+        mentor.setRole(dto.getRole());
         return mentor;
     }
 } 
