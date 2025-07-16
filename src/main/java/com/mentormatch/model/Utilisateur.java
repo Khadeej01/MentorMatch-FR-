@@ -14,6 +14,7 @@ public abstract class Utilisateur implements Serializable {
     private String nom;
     private String email;
     private String role; // ADMIN, MENTOR, APPRENANT
+    private String password;
 
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
@@ -26,4 +27,7 @@ public abstract class Utilisateur implements Serializable {
 
     public String getRole() { return role; }
     public void setRole(String role) { this.role = role; }
+
+    public String getPassword() { return password; }
+    public void setPassword(String password) { this.password = password; }
 } 
