@@ -14,7 +14,7 @@ import java.util.stream.Collectors;
 public class EvaluationService {
     private final EvaluationRepository evaluationRepository;
 
-    public EvaluationService(EvaluationRepositoryevaluationRepository) {
+    public EvaluationService(EvaluationRepository evaluationRepository) {
         this.evaluationRepository = evaluationRepository;
     }
 
