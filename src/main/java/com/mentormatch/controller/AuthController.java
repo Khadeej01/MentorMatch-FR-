@@ -2,6 +2,7 @@ package com.mentormatch.controller;
 
 import com.mentormatch.model.Utilisateur;
 import com.mentormatch.repository.UtilisateurRepository;
+import com.mentormatch.security.JwtUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.*;
@@ -10,6 +11,9 @@ import org.springframework.web.bind.annotation.*;
 public class AuthController {
     @Autowired
     private UtilisateurRepository utilisateurRepository;
+
+    @Autowired
+    private JwtUtil jwtUtil;
 
     private BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
 
@@ -29,7 +33,7 @@ public class AuthController {
         if (user == null || !passwordEncoder.matches(utilisateur.getPassword(), user.getPassword())) {
             return "Email ou mot de passe incorrect";
         }
-        // Ici, on retournera le JWT plus tard
-        return "Connexion réussie";
+        String token = jwtUtil.generateToken(user.getEmail(), user.getRole());
+        return token;
     }
 } 
