@@ -6,7 +6,7 @@ COPY src ./src
 RUN mvn clean install -DskipTests
 
 # Stage 2: Create the final image
-FROM eclipse-temurin:17-jre-jammy
+FROM eclipse-temurin:17-jdk-jammy
 WORKDIR /app
 COPY --from=build /app/target/MentorMatch-0.0.1-SNAPSHOT.jar app.jar
 EXPOSE 8080

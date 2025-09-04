@@ -42,4 +42,9 @@ public class SessionController {
     public void deleteSession(@PathVariable Long id) {
         sessionService.deleteById(id);
     }
+
+    @GetMapping("/")
+    public int countSessionsByMentorName( @RequestParam(required = false) String mentorName) {
+
+    return sessionService.countSessionsByMentorName(mentorName);}
 } 
