@@ -1,45 +1,60 @@
 package com.mentormatch.controller;
 
-import com.mentormatch.dto.AdminDTO;
+import com.mentormatch.model.Admin;
 import com.mentormatch.service.AdminService;
+import com.mentormatch.security.JwtUtil;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
-import java.util.Optional;
+import java.util.Map;
 
 @RestController
-@RequestMapping("/api/admins")
+@RequestMapping("/api/admin")
+@CrossOrigin(origins = "http://localhost:4200")
 public class AdminController {
-    private final AdminService adminService;
-
-    public AdminController(AdminService adminService) {
-        this.adminService = adminService;
+    
+    @Autowired
+    private AdminService adminService;
+    
+    @Autowired
+    private JwtUtil jwtUtil;
+    
+    @PostMapping("/login")
+    public ResponseEntity<?> login(@RequestBody Map<String, String> credentials) {
+        String username = credentials.get("username");
+        String password = credentials.get("password");
+        
+        Admin admin = adminService.authenticate(username, password);
+        if (admin != null) {
+            String token = jwtUtil.generateToken(admin.getEmail(), admin.getRole());
+            return ResponseEntity.ok(Map.of(
+                "token", token,
+                "user", Map.of(
+                    "id", admin.getId(),
+                    "username", admin.getUsername(),
+                    "email", admin.getEmail(),
+                    "role", admin.getRole()
+                )
+            ));
+        } else {
+            return ResponseEntity.badRequest().body(Map.of("error", "Invalid credentials"));
+        }
     }
-
-    @GetMapping
-    public List<AdminDTO> getAllAdmins() {
-        return adminService.findAll();
+    
+    @GetMapping("/dashboard/stats")
+    public ResponseEntity<Map<String, Object>> getDashboardStats() {
+        Map<String, Object> stats = adminService.getDashboardStats();
+        return ResponseEntity.ok(stats);
     }
-
-    @GetMapping("/{id}")
-    public AdminDTO getAdminById(@PathVariable Long id) {
-        Optional<AdminDTO> admin = adminService.findById(id);
-        return admin.orElse(null);
-    }
-
-    @PostMapping
-    public AdminDTO createAdmin(@RequestBody AdminDTO adminDTO) {
-        return adminService.save(adminDTO);
-    }
-
-    @PutMapping("/{id}")
-    public AdminDTO updateAdmin(@PathVariable Long id, @RequestBody AdminDTO adminDTO) {
-        adminDTO.setId(id);
-        return adminService.save(adminDTO);
-    }
-
-    @DeleteMapping("/{id}")
-    public void deleteAdmin(@PathVariable Long id) {
-        adminService.deleteById(id);
+    
+    @PostMapping("/init")
+    public ResponseEntity<?> initializeAdmin() {
+        Admin admin = adminService.createDefaultAdmin();
+        if (admin != null) {
+            return ResponseEntity.ok(Map.of("message", "Admin created successfully", "username", "admin", "password", "admin123"));
+        } else {
+            return ResponseEntity.ok(Map.of("message", "Admin already exists"));
+        }
     }
 }

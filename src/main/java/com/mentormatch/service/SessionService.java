@@ -42,4 +42,18 @@ public class SessionService {
     public int countSessionsByMentorName(String mentorName) {
         return sessionRepository.countSessionsByMentorName(mentorName);
     }
+
+    public List<SessionDTO> findByMentorId(Long mentorId) {
+        return sessionRepository.findByMentorIdOrderByDateHeureDesc(mentorId)
+                .stream()
+                .map(SessionMapper::toDTO)
+                .collect(Collectors.toList());
+    }
+
+    public List<SessionDTO> findByApprenantId(Long apprenantId) {
+        return sessionRepository.findByApprenantIdOrderByDateHeureDesc(apprenantId)
+                .stream()
+                .map(SessionMapper::toDTO)
+                .collect(Collectors.toList());
+    }
 } 
