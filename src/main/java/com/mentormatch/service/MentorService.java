@@ -45,4 +45,18 @@ public class MentorService {
                 .map(MentorMapper::toDTO)
                 .collect(Collectors.toList());
     }
+
+    public List<MentorDTO> findByCompetences(String competences) {
+        return mentorRepository.findByCompetencesContainingIgnoreCase(competences)
+                .stream()
+                .map(MentorMapper::toDTO)
+                .collect(Collectors.toList());
+    }
+
+    public List<MentorDTO> searchMentors(String searchTerm) {
+        return mentorRepository.findByNomContainingIgnoreCaseOrCompetencesContainingIgnoreCase(searchTerm, searchTerm)
+                .stream()
+                .map(MentorMapper::toDTO)
+                .collect(Collectors.toList());
+    }
 } 

@@ -7,4 +7,6 @@ import java.util.List;
 
 public interface MentorRepository extends JpaRepository<Mentor, Long> {
     List<Mentor> findByIsAvailable(boolean isAvailable);
+    List<Mentor> findByCompetencesContainingIgnoreCase(String competences);
+    List<Mentor> findByNomContainingIgnoreCaseOrCompetencesContainingIgnoreCase(String nom, String competences);
 } 
