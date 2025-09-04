@@ -38,4 +38,8 @@ public class SessionService {
     public void deleteById(Long id) {
         sessionRepository.deleteById(id);
     }
+
+    public int countSessionsByMentorName(String mentorName) {
+        return sessionRepository.countSessionsByMentorName(mentorName);
+    }
 } 
