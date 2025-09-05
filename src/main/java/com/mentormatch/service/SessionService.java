@@ -39,9 +39,9 @@ public class SessionService {
         sessionRepository.deleteById(id);
     }
 
-    public int countSessionsByMentorName(String mentorName) {
-        return sessionRepository.countSessionsByMentorName(mentorName);
-    }
+//    public int countSessionsByMentorName(String mentorName) {
+//        return sessionRepository.countSessionsByMentorName(mentorName);
+//    }
 
     public List<SessionDTO> findByMentorId(Long mentorId) {
         return sessionRepository.findByMentorIdOrderByDateHeureDesc(mentorId)
