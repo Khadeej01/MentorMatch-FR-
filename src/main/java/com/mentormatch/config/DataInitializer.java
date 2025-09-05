@@ -21,7 +21,7 @@ public class DataInitializer implements CommandLineRunner {
     public void run(String... args) throws Exception {
         if (adminRepository.count() == 0) {
             Admin admin = new Admin();
-            admin.setNom("Admin");
+            admin.setUsername("Admin");
             admin.setEmail("admin@example.com");
             admin.setPassword(passwordEncoder.encode("admin123"));
             admin.setRole("ADMIN");

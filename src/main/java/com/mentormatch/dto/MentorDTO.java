@@ -6,9 +6,24 @@ public class MentorDTO {
     private String email;
     private String competences;
     private String experience;
-    private boolean isAvailable;
+    private boolean available;
     private String role;
 
+    // Constructors
+    public MentorDTO() {}
+
+    public MentorDTO(Long id, String nom, String email, String competences, 
+                    String experience, boolean available, String role) {
+        this.id = id;
+        this.nom = nom;
+        this.email = email;
+        this.competences = competences;
+        this.experience = experience;
+        this.available = available;
+        this.role = role;
+    }
+
+    // Getters and Setters
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
 
@@ -24,9 +39,9 @@ public class MentorDTO {
     public String getExperience() { return experience; }
     public void setExperience(String experience) { this.experience = experience; }
 
-    public boolean isAvailable() { return isAvailable; }
-    public void setAvailable(boolean isAvailable) { this.isAvailable = isAvailable; }
+    public boolean isAvailable() { return available; }
+    public void setAvailable(boolean available) { this.available = available; }
 
     public String getRole() { return role; }
     public void setRole(String role) { this.role = role; }
-} 
+}

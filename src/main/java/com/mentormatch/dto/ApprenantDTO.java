@@ -8,6 +8,20 @@ public class ApprenantDTO {
     private String niveau;
     private String role;
 
+    // Constructors
+    public ApprenantDTO() {}
+
+    public ApprenantDTO(Long id, String nom, String email, String objectifs, 
+                       String niveau, String role) {
+        this.id = id;
+        this.nom = nom;
+        this.email = email;
+        this.objectifs = objectifs;
+        this.niveau = niveau;
+        this.role = role;
+    }
+
+    // Getters and Setters
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
 
@@ -25,4 +39,4 @@ public class ApprenantDTO {
 
     public String getRole() { return role; }
     public void setRole(String role) { this.role = role; }
-} 
+}
