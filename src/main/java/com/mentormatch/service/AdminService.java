@@ -30,8 +30,15 @@ public class AdminService {
     
     private BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
     
-    public Admin authenticate(String username, String password) {
-        Optional<Admin> adminOpt = adminRepository.findByUsername(username);
+    public Admin authenticate(String loginIdentifier, String password) {
+        // Essayer d'abord par username
+        Optional<Admin> adminOpt = adminRepository.findByUsername(loginIdentifier);
+        
+        // Si pas trouvé par username, essayer par email
+        if (adminOpt.isEmpty()) {
+            adminOpt = adminRepository.findByEmail(loginIdentifier);
+        }
+        
         if (adminOpt.isPresent()) {
             Admin admin = adminOpt.get();
             if (passwordEncoder.matches(password, admin.getPassword())) {
