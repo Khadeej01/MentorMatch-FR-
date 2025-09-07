@@ -2,6 +2,12 @@ package com.mentormatch.controller;
 
 import com.mentormatch.dto.MentorDTO;
 import com.mentormatch.service.MentorService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -11,6 +17,7 @@ import java.util.Optional;
 @RestController
 @RequestMapping("/api/mentors")
 @CrossOrigin(origins = "http://localhost:4200")
+@Tag(name = "Mentors", description = "API pour la gestion des mentors")
 public class MentorController {
     private final MentorService mentorService;
 
@@ -18,11 +25,16 @@ public class MentorController {
         this.mentorService = mentorService;
     }
 
+    @Operation(summary = "Récupérer tous les mentors", description = "Récupère la liste de tous les mentors avec filtres optionnels")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Liste des mentors récupérée avec succès"),
+            @ApiResponse(responseCode = "500", description = "Erreur interne du serveur")
+    })
     @GetMapping
     public ResponseEntity<List<MentorDTO>> getAllMentors(
-            @RequestParam(value = "available", required = false) Boolean available,
-            @RequestParam(value = "competences", required = false) String competences,
-            @RequestParam(value = "search", required = false) String searchTerm) {
+            @Parameter(description = "Filtrer par disponibilité") @RequestParam(value = "available", required = false) Boolean available,
+            @Parameter(description = "Filtrer par compétences") @RequestParam(value = "competences", required = false) String competences,
+            @Parameter(description = "Terme de recherche") @RequestParam(value = "search", required = false) String searchTerm) {
         
         List<MentorDTO> mentors;
         

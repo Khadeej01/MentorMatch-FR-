@@ -42,16 +42,26 @@ public class SecurityConfig {
             .csrf(csrf -> csrf.disable())
             .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
             .authorizeHttpRequests(auth -> auth
+                // Swagger/OpenAPI endpoints
+                .requestMatchers("/swagger-ui/**", "/swagger-ui.html").permitAll()
+                .requestMatchers("/v3/api-docs/**", "/v3/api-docs").permitAll()
+                .requestMatchers("/swagger-resources/**", "/webjars/**").permitAll()
+                
+                // Test endpoints
+                .requestMatchers("/api/test/**").permitAll()
+                
                 // Endpoints publics
                 .requestMatchers("/api/auth/**").permitAll()
                 .requestMatchers("/api/admin/init").permitAll()
+                .requestMatchers("/api/admin/login").permitAll()
                 .requestMatchers("/api/mentors").permitAll()
                 .requestMatchers("/api/mentors/search").permitAll()
                 .requestMatchers("/api/mentors/competences/**").permitAll()
                 .requestMatchers("/api/mentors/{id}").permitAll()
                 
-                // Endpoints admin
-                .requestMatchers("/api/admin/**").hasRole("ADMIN")
+                // Endpoints admin (sauf init et login)
+                .requestMatchers("/api/admin/dashboard/**").hasRole("ADMIN")
+                .requestMatchers("/api/admin/stats/**").hasRole("ADMIN")
                 
                 // Endpoints mentors
                 .requestMatchers("/api/mentors/**").hasAnyRole("MENTOR", "ADMIN")

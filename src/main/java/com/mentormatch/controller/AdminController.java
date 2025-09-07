@@ -23,9 +23,13 @@ public class AdminController {
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody Map<String, String> credentials) {
         String username = credentials.get("username");
+        String email = credentials.get("email");
         String password = credentials.get("password");
         
-        Admin admin = adminService.authenticate(username, password);
+        // Accepter soit username soit email
+        String loginIdentifier = (username != null) ? username : email;
+        
+        Admin admin = adminService.authenticate(loginIdentifier, password);
         if (admin != null) {
             String token = jwtUtil.generateToken(admin.getEmail(), admin.getRole());
             return ResponseEntity.ok(Map.of(
