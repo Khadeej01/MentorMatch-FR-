@@ -57,7 +57,7 @@ public class AuthController {
         }
 
         // Créer l'utilisateur selon le rôle
-        if ("MENTOR".equals(role)) {
+        if ("mentor".equalsIgnoreCase(role)) {
             Mentor mentor = new Mentor();
             mentor.setNom(nom);
             mentor.setEmail(email);
@@ -65,7 +65,7 @@ public class AuthController {
             mentor.setRole("MENTOR");
             mentor.setAvailable(true);
             mentorRepository.save(mentor);
-        } else if ("APPRENANT".equals(role)) {
+        } else if ("learner".equalsIgnoreCase(role)) {
             Apprenant apprenant = new Apprenant();
             apprenant.setNom(nom);
             apprenant.setEmail(email);
@@ -104,6 +104,8 @@ public class AuthController {
         String nom = getUserNom(user);
         Long id = getUserId(user);
 
+        String frontendRole = "APPRENANT".equalsIgnoreCase(role) ? "learner" : role.toLowerCase();
+
         String token = jwtUtil.generateToken(email, role);
         return ResponseEntity.ok(Map.of(
             "token", token,
@@ -111,7 +113,7 @@ public class AuthController {
                 "id", id,
                 "nom", nom,
                 "email", email,
-                "role", role
+                "role", frontendRole
             )
         ));
     }

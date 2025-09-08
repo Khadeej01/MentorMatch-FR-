@@ -5,6 +5,7 @@ import com.mentormatch.security.JwtUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
@@ -54,17 +55,20 @@ public class SecurityConfig {
                 .requestMatchers("/api/auth/**").permitAll()
                 .requestMatchers("/api/admin/init").permitAll()
                 .requestMatchers("/api/admin/login").permitAll()
-                .requestMatchers("/api/mentors").permitAll()
+                .requestMatchers(HttpMethod.GET, "/api/mentors").permitAll()
+                .requestMatchers(HttpMethod.GET, "/api/mentors/{id}").permitAll()
+                .requestMatchers(HttpMethod.GET, "/api/mentors/**").permitAll()
                 .requestMatchers("/api/mentors/search").permitAll()
                 .requestMatchers("/api/mentors/competences/**").permitAll()
-                .requestMatchers("/api/mentors/{id}").permitAll()
                 
                 // Endpoints admin (sauf init et login)
                 .requestMatchers("/api/admin/dashboard/**").hasRole("ADMIN")
                 .requestMatchers("/api/admin/stats/**").hasRole("ADMIN")
                 
-                // Endpoints mentors
-                .requestMatchers("/api/mentors/**").hasAnyRole("MENTOR", "ADMIN")
+                // Endpoints mentors protégés (POST, PUT, DELETE)
+                .requestMatchers(HttpMethod.POST, "/api/mentors").hasAnyRole("MENTOR", "ADMIN")
+                .requestMatchers(HttpMethod.PUT, "/api/mentors/{id}").hasAnyRole("MENTOR", "ADMIN")
+                .requestMatchers(HttpMethod.DELETE, "/api/mentors/{id}").hasAnyRole("MENTOR", "ADMIN")
                 
                 // Endpoints apprenants
                 .requestMatchers("/api/apprenants/**").hasAnyRole("APPRENANT", "ADMIN")
