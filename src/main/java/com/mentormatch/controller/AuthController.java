@@ -51,32 +51,48 @@ public class AuthController {
         String role = userData.get("role");
         String nom = userData.get("nom");
 
-        // Vérifier si l'email existe déjà
         if (isEmailExists(email)) {
             return ResponseEntity.badRequest().body(Map.of("error", "Email déjà utilisé"));
         }
 
-        // Créer l'utilisateur selon le rôle
-        if ("MENTOR".equals(role)) {
+        Object savedUser;
+        String dbRole;
+
+        if ("mentor".equalsIgnoreCase(role)) {
             Mentor mentor = new Mentor();
             mentor.setNom(nom);
             mentor.setEmail(email);
             mentor.setPassword(passwordEncoder.encode(password));
             mentor.setRole("MENTOR");
+            mentor.setCompetences(userData.getOrDefault("competences", ""));
+            mentor.setExperience(userData.getOrDefault("experience", ""));
             mentor.setAvailable(true);
-            mentorRepository.save(mentor);
-        } else if ("APPRENANT".equals(role)) {
+            savedUser = mentorRepository.save(mentor);
+            dbRole = "MENTOR";
+        } else if ("learner".equalsIgnoreCase(role)) {
             Apprenant apprenant = new Apprenant();
             apprenant.setNom(nom);
             apprenant.setEmail(email);
             apprenant.setPassword(passwordEncoder.encode(password));
             apprenant.setRole("APPRENANT");
-            apprenantRepository.save(apprenant);
+            savedUser = apprenantRepository.save(apprenant);
+            dbRole = "APPRENANT";
         } else {
             return ResponseEntity.badRequest().body(Map.of("error", "Rôle invalide"));
         }
 
-        return ResponseEntity.ok(Map.of("message", "Inscription réussie"));
+        String token = jwtUtil.generateToken(email, dbRole);
+        String frontendRole = "APPRENANT".equalsIgnoreCase(dbRole) ? "learner" : dbRole.toLowerCase();
+
+        return ResponseEntity.ok(Map.of(
+            "token", token,
+            "user", Map.of(
+                "id", getUserId(savedUser),
+                "nom", getUserNom(savedUser),
+                "email", email,
+                "role", frontendRole
+            )
+        ));
     }
 
     @Operation(summary = "Connexion utilisateur", description = "Connecte un mentor ou apprenant et retourne un token JWT")
