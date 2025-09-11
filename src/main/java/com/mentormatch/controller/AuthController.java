@@ -58,6 +58,8 @@ public class AuthController {
         Object savedUser;
         String dbRole;
 
+        // Créer l'utilisateur selon le rôle
+
         if ("mentor".equalsIgnoreCase(role)) {
             Mentor mentor = new Mentor();
             mentor.setNom(nom);
@@ -67,8 +69,12 @@ public class AuthController {
             mentor.setCompetences(userData.getOrDefault("competences", ""));
             mentor.setExperience(userData.getOrDefault("experience", ""));
             mentor.setAvailable(true);
+
             savedUser = mentorRepository.save(mentor);
             dbRole = "MENTOR";
+
+            mentorRepository.save(mentor);
+
         } else if ("learner".equalsIgnoreCase(role)) {
             Apprenant apprenant = new Apprenant();
             apprenant.setNom(nom);
@@ -120,6 +126,8 @@ public class AuthController {
         String nom = getUserNom(user);
         Long id = getUserId(user);
 
+        String frontendRole = "APPRENANT".equalsIgnoreCase(role) ? "learner" : role.toLowerCase();
+
         String token = jwtUtil.generateToken(email, role);
         return ResponseEntity.ok(Map.of(
             "token", token,
@@ -127,7 +135,7 @@ public class AuthController {
                 "id", id,
                 "nom", nom,
                 "email", email,
-                "role", role
+                "role", frontendRole
             )
         ));
     }
