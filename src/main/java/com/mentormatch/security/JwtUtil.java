@@ -6,15 +6,25 @@ import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.security.Keys;
 import org.springframework.stereotype.Component;
 
+
+import javax.crypto.SecretKey;
+import java.nio.charset.StandardCharsets;
+
 import java.nio.charset.StandardCharsets;
 import java.security.Key;
+
 import java.util.Date;
 
 @Component
 public class JwtUtil {
+
+    private final String SECRET_STRING = "thisIsASecretKeyForMentorMatchApplicationThatIsLongEnoughForHS256";
+    private final SecretKey SIGNING_KEY = Keys.hmacShaKeyFor(SECRET_STRING.getBytes(StandardCharsets.UTF_8));
+
     // HS256 requires a key of at least 256 bits (32 bytes)
     private static final String SECRET = "mentormatch-secret-key-should-be-at-least-32-bytes!!";
     private static final Key SIGNING_KEY = Keys.hmacShaKeyFor(SECRET.getBytes(StandardCharsets.UTF_8));
+
     private final long EXPIRATION = 86400000; // 1 jour en ms
 
     public String generateToken(String email, String role) {
