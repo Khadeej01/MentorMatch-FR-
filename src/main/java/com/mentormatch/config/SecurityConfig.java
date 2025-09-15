@@ -39,61 +39,51 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
-            .cors(cors -> cors.configurationSource(corsConfigurationSource()))
-            .csrf(csrf -> csrf.disable())
-            .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-            .authorizeHttpRequests(auth -> auth
-                // Swagger/OpenAPI endpoints
-                .requestMatchers("/swagger-ui/**", "/swagger-ui.html").permitAll()
-                .requestMatchers("/v3/api-docs/**", "/v3/api-docs").permitAll()
-                .requestMatchers("/swagger-resources/**", "/webjars/**").permitAll()
-                
-                // Test endpoints
-                .requestMatchers("/api/test/**").permitAll()
-                
-                // Endpoints publics
-                .requestMatchers("/api/auth/**").permitAll()
-                .requestMatchers("/api/admin/init").permitAll()
-                .requestMatchers("/api/admin/login").permitAll()
-                .requestMatchers(HttpMethod.GET, "/api/mentors").permitAll()
-                .requestMatchers(HttpMethod.GET, "/api/mentors/{id}").permitAll()
-                .requestMatchers(HttpMethod.GET, "/api/mentors/**").permitAll()
-                .requestMatchers("/api/mentors/search").permitAll()
-                .requestMatchers("/api/mentors/competences/**").permitAll()
-                
-                // Endpoints admin (sauf init et login)
-                .requestMatchers("/api/admin/dashboard/**").hasRole("ADMIN")
-                .requestMatchers("/api/admin/stats/**").hasRole("ADMIN")
-                
-                // Endpoints mentors protégés (POST, PUT, DELETE)
-                .requestMatchers(HttpMethod.POST, "/api/mentors").hasAnyRole("MENTOR", "ADMIN")
-                .requestMatchers(HttpMethod.PUT, "/api/mentors/{id}").hasAnyRole("MENTOR", "ADMIN")
-                .requestMatchers(HttpMethod.DELETE, "/api/mentors/{id}").hasAnyRole("MENTOR", "ADMIN")
-                
-                // Endpoints apprenants
-                .requestMatchers("/api/apprenants/**").hasAnyRole("APPRENANT", "ADMIN")
-                
-                // Endpoints bookings
-                .requestMatchers("/api/bookings/**").hasAnyRole("MENTOR", "APPRENANT", "ADMIN")
-                
-                // Endpoints sessions
-                .requestMatchers("/api/sessions/**").hasAnyRole("MENTOR", "APPRENANT", "ADMIN")
-                
-                // Tous les autres endpoints nécessitent une authentification
-                .anyRequest().authenticated()
-            )
-            .addFilterBefore(jwtAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class);
+                .cors(cors -> cors.configurationSource(corsConfigurationSource()))
+                .csrf(csrf -> csrf.disable())
+                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                .authorizeHttpRequests(auth -> auth
+                        // Public endpoints - no authentication required
+                        .requestMatchers(HttpMethod.POST, "/api/auth/signin", "/api/auth/signup", "/api/auth/register", "/api/auth/login").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/mentors", "/api/mentors/**").permitAll() // Public mentor viewing
+                        .requestMatchers(HttpMethod.GET, "/actuator/health").permitAll() // Health check for Docker
+                        .requestMatchers(HttpMethod.GET, "/api/test/**").permitAll() // Test endpoints
+                        
+                        // Admin endpoints - specific access control
+                        .requestMatchers(HttpMethod.POST, "/api/admin/login", "/api/admin/init").permitAll() // Public admin auth
+                        .requestMatchers("/api/admin/**").hasRole("ADMIN") // All other admin endpoints require ADMIN role
+                        
+                        // Mentor endpoints - require mentor role or admin
+                        .requestMatchers(HttpMethod.PUT, "/api/mentors/**").hasAnyRole("MENTOR", "ADMIN")
+                        .requestMatchers(HttpMethod.DELETE, "/api/mentors/**").hasAnyRole("MENTOR", "ADMIN")
+                        
+                        // Learner endpoints - require learner role or admin
+                        .requestMatchers(HttpMethod.PUT, "/api/learners/**").hasAnyRole("LEARNER", "ADMIN")
+                        .requestMatchers(HttpMethod.DELETE, "/api/learners/**").hasAnyRole("LEARNER", "ADMIN")
+                        
+                        // Booking endpoints - require authentication
+                        .requestMatchers("/api/bookings/**").authenticated()
+                        
+                        // All other endpoints require authentication
+                        .anyRequest().authenticated()
+                )
+                .addFilterBefore(jwtAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
     }
-
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOriginPatterns(Arrays.asList("http://localhost:4200"));
+        // Allow specific origins in production, localhost for development
+        configuration.setAllowedOriginPatterns(Arrays.asList(
+            "http://localhost:4200", 
+            "http://localhost:3000",
+            "http://127.0.0.1:4200"
+        ));
         configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
         configuration.setAllowedHeaders(Arrays.asList("*"));
         configuration.setAllowCredentials(true);
+        configuration.setMaxAge(3600L); // Cache preflight response for 1 hour
         
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", configuration);

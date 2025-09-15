@@ -154,6 +154,11 @@ class JwtUtilTest {
 
         // When
         String token1 = jwtUtil.generateToken(email, role);
+        try {
+            Thread.sleep(1000); // Wait for 1 second to ensure a different issued-at time
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
         String token2 = jwtUtil.generateToken(email, role);
 
         // Then

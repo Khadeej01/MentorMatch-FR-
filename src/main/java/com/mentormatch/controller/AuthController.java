@@ -46,59 +46,80 @@ public class AuthController {
     })
     @PostMapping("/register")
     public ResponseEntity<?> register(@RequestBody Map<String, String> userData) {
-        String email = userData.get("email");
-        String password = userData.get("password");
-        String role = userData.get("role");
-        String nom = userData.get("nom");
+        System.out.println("=== REGISTRATION START ===");
+        System.out.println("Registration request received: " + userData);
+        
+        try {
+            String email = userData.get("email");
+            String password = userData.get("password");
+            String role = userData.get("role");
+            String nom = userData.get("nom");
+            
+            System.out.println("Extracted fields - email: " + email + ", role: " + role + ", nom: " + nom);
 
-        if (isEmailExists(email)) {
-            return ResponseEntity.badRequest().body(Map.of("error", "Email déjà utilisé"));
+            if (isEmailExists(email)) {
+                System.out.println("Email already exists: " + email);
+                return ResponseEntity.badRequest().body(Map.of("error", "Email déjà utilisé"));
+            }
+            
+            System.out.println("Email check passed, proceeding with user creation...");
+
+            Object savedUser;
+            String dbRole;
+
+            // Créer l'utilisateur selon le rôle
+            if ("mentor".equalsIgnoreCase(role)) {
+                Mentor mentor = new Mentor();
+                mentor.setNom(nom);
+                mentor.setEmail(email);
+                mentor.setPassword(passwordEncoder.encode(password));
+                mentor.setRole("MENTOR");
+                mentor.setCompetences(userData.getOrDefault("competences", ""));
+                mentor.setExperience(userData.getOrDefault("experience", ""));
+                mentor.setAvailable(true);
+
+                savedUser = mentorRepository.save(mentor);
+                dbRole = "MENTOR";
+                System.out.println("Mentor created successfully: " + mentor.getId());
+
+            } else if ("learner".equalsIgnoreCase(role)) {
+                Apprenant apprenant = new Apprenant();
+                apprenant.setNom(nom);
+                apprenant.setEmail(email);
+                apprenant.setPassword(passwordEncoder.encode(password));
+                apprenant.setRole("APPRENANT");
+                // Add learner-specific fields if provided
+                if (userData.containsKey("objectifs")) {
+                    apprenant.setObjectifs(userData.get("objectifs"));
+                }
+                if (userData.containsKey("niveau")) {
+                    apprenant.setNiveau(userData.get("niveau"));
+                }
+                
+                savedUser = apprenantRepository.save(apprenant);
+                dbRole = "APPRENANT";
+                System.out.println("Learner created successfully: " + apprenant.getId());
+            } else {
+                return ResponseEntity.badRequest().body(Map.of("error", "Rôle invalide"));
+            }
+
+            String token = jwtUtil.generateToken(email, dbRole);
+            String frontendRole = "APPRENANT".equalsIgnoreCase(dbRole) ? "learner" : dbRole.toLowerCase();
+
+            return ResponseEntity.ok(Map.of(
+                "token", token,
+                "user", Map.of(
+                    "id", getUserId(savedUser),
+                    "nom", getUserNom(savedUser),
+                    "email", email,
+                    "role", frontendRole
+                )
+            ));
+        } catch (Exception e) {
+            System.err.println("Error during registration: " + e.getMessage());
+            e.printStackTrace();
+            return ResponseEntity.status(500).body(Map.of("error", "Internal server error during registration"));
         }
-
-        Object savedUser;
-        String dbRole;
-
-        // Créer l'utilisateur selon le rôle
-
-        if ("mentor".equalsIgnoreCase(role)) {
-            Mentor mentor = new Mentor();
-            mentor.setNom(nom);
-            mentor.setEmail(email);
-            mentor.setPassword(passwordEncoder.encode(password));
-            mentor.setRole("MENTOR");
-            mentor.setCompetences(userData.getOrDefault("competences", ""));
-            mentor.setExperience(userData.getOrDefault("experience", ""));
-            mentor.setAvailable(true);
-
-            savedUser = mentorRepository.save(mentor);
-            dbRole = "MENTOR";
-
-            mentorRepository.save(mentor);
-
-        } else if ("learner".equalsIgnoreCase(role)) {
-            Apprenant apprenant = new Apprenant();
-            apprenant.setNom(nom);
-            apprenant.setEmail(email);
-            apprenant.setPassword(passwordEncoder.encode(password));
-            apprenant.setRole("APPRENANT");
-            savedUser = apprenantRepository.save(apprenant);
-            dbRole = "APPRENANT";
-        } else {
-            return ResponseEntity.badRequest().body(Map.of("error", "Rôle invalide"));
-        }
-
-        String token = jwtUtil.generateToken(email, dbRole);
-        String frontendRole = "APPRENANT".equalsIgnoreCase(dbRole) ? "learner" : dbRole.toLowerCase();
-
-        return ResponseEntity.ok(Map.of(
-            "token", token,
-            "user", Map.of(
-                "id", getUserId(savedUser),
-                "nom", getUserNom(savedUser),
-                "email", email,
-                "role", frontendRole
-            )
-        ));
     }
 
     @Operation(summary = "Connexion utilisateur", description = "Connecte un mentor ou apprenant et retourne un token JWT")

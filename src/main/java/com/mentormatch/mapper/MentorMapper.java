@@ -5,6 +5,9 @@ import com.mentormatch.dto.MentorDTO;
 
 public class MentorMapper {
     public static MentorDTO toDTO(Mentor mentor) {
+        if (mentor == null) {
+            return null;
+        }
         MentorDTO dto = new MentorDTO();
         dto.setId(mentor.getId());
         dto.setNom(mentor.getNom());
@@ -17,6 +20,9 @@ public class MentorMapper {
     }
 
     public static Mentor toEntity(MentorDTO dto) {
+        if (dto == null) {
+            return null;
+        }
         Mentor mentor = new Mentor();
         mentor.setId(dto.getId());
         mentor.setNom(dto.getNom());

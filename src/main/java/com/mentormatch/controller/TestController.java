@@ -16,6 +16,7 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("/api/test")
+@CrossOrigin(origins = "http://localhost:4200")
 @Tag(name = "Test", description = "API de test pour vérifier le fonctionnement")
 public class TestController {
     
